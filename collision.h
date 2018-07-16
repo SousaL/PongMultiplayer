@@ -5,6 +5,7 @@
 
 #define PI 3.14159265
 #define to_rad(x) (x * (PI / 180.0))
+#define SEGMENTS 8
 
 int bounding_box_collision(int b1_x, int b1_y, int b1_w, int b1_h,
    int b2_x, int b2_y, int b2_w, int b2_h);

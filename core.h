@@ -5,8 +5,8 @@
 #define PALLET_SIZE_W 20      /* +---------------------+ */
 #define PALLET_SIZE_H 150    /* +---------------------+ */
 #define BALL_SIZE 10
-#define INIT_ANGLE 10
-#define INIT_VELOCITY 20
+#define INIT_ANGLE 5
+#define INIT_VELOCITY 145
 #define PALLET_VELOCITY 20
 #define DIRECTION_RIGHT 1
 #define DIRECTION_LEFT -1

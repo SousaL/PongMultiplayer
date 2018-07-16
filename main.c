@@ -110,7 +110,7 @@ int main(int argc, char **argv){
       al_flip_display();
       printf("x: %f y: %f ang: %f\n", cp.ball.x, cp.ball.y, cp.ball.angle);
     }
-    
+
    }
 
    al_destroy_timer(timer);
