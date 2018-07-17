@@ -3,13 +3,24 @@
 #define DISPLAY_W 800
 #define DISPLAY_H 600
 
-enum machine{
+enum machine{   /*represet if is a server or clinet  */
   server = 0,
   client
 };
 
 typedef enum machine Machine;
 
+
+
+
+struct config{
+  Machine machine;      /*represet if is a server or clinet  */
+  int port_server;      /*the port_number*/
+  int sock_server;
+  int sock_client;
+  char ip_server[30];     /*the ip to connect*/
+};
+typedef struct config Config;
 
 enum point{
   p1 = 1,

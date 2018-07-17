@@ -1,23 +1,15 @@
 /* Author: Leonardo P. S. Sousa */
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <allegro5/allegro.h>
-#include <allegro5/allegro_primitives.h>
-#include <allegro5/allegro_color.h>
-#include <allegro5/allegro_font.h>
-#include <allegro5/allegro_ttf.h>
-
-#include "struct.h"
-#include "core.h"
-#include "draw.h"
-#include "collision.h"
-
+#include "main.h"
 
 const float FPS = 30;
 
 int main(int argc, char **argv){
+
+
+  Config config;
+  Components cp;
+  start(&cp, &config);
+
 
   al_init();
   al_init_primitives_addon();
@@ -25,18 +17,14 @@ int main(int argc, char **argv){
   al_init_ttf_addon();
   al_install_keyboard();
 
-
   ALLEGRO_EVENT_QUEUE *event_queue = al_create_event_queue();
   ALLEGRO_TIMER *timer = al_create_timer(1.0 / FPS);
-  ALLEGRO_FONT *font = al_load_font("digital.ttf", 48, 0);
-
-
+  ALLEGRO_FONT *font = al_load_font("digital.ttf", 78, 0);
 
   if(!font){
     printf("Error to load a font\n");
     return -1;
   }
-
 
   ALLEGRO_DISPLAY *display = al_create_display(DISPLAY_W,DISPLAY_H);
 
@@ -45,92 +33,60 @@ int main(int argc, char **argv){
   al_register_event_source(event_queue, al_get_timer_event_source(timer));
   al_register_event_source(event_queue, al_get_keyboard_event_source());
   al_clear_to_color(COLOR_BLACK);
-
   al_start_timer(timer);
 
-  Components cp;
-  start(&cp);
-
-  Machine machine = server;
-
-  printf("*******************************************\n");
-  printf("******      ****    ***    **  ***    *****\n");
-  printf("******  **  ***  **  **  *  *  **  ********\n");
-  printf("******      ***  **  **  ** *  **  *   ****\n");
-  printf("******  *******  **  **  **    **  **  ****\n");
-  printf("******  ********    ***  ***   ***    *****\n");
-  printf("*******************************************\n\n\n");
-  printf("Servidor ou Cliente? (S/C) ");
-  getchar();
-  printf("Defina a porta: ");
-  getchar();
-  printf("Ip conexao: ");
-  getchar();
-  printf("Porta: ");
-  getchar();
-
-  return;
-
-
-
-  while(1){
-    ALLEGRO_EVENT ev;
+  ALLEGRO_EVENT ev;
+  while(1){     /* Game Loop */
     al_wait_for_event(event_queue, &ev);
     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
       break;
     }
-    if(machine == server){
-      //cp.p1.angle = 0;
-    }
-    else if(machine == client){
-      cp.p2.angle = 0;
-    }
 
-    if(ev.type == ALLEGRO_EVENT_KEY_DOWN){
-      if(ev.keyboard.keycode == ALLEGRO_KEY_UP){
-        if(machine == server){
-          cp.p1.angle = 270;
-        }
-        else if(machine == client){
-          cp.p2.angle = 270;
-        }
-      }
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_DOWN){
-        if(machine == server){
-          cp.p1.angle = 90;
-        }
-        else if(machine == client){
-          cp.p2.angle = 90;
-        }
-      }
-    }
-    if(ev.type == ALLEGRO_EVENT_KEY_UP){
-      if(ev.keyboard.keycode == ALLEGRO_KEY_UP){
-        if(machine == server){
-          cp.p1.angle = 0;
-        }
-        else if(machine == client){
-          cp.p2.angle = 0;
-        }
-      }
-      else if(ev.keyboard.keycode == ALLEGRO_KEY_DOWN){
-        if(machine == server){
-          cp.p1.angle = 0;
-        }
-        else if(machine == client){
-          cp.p2.angle = 0;
-        }
-      }
-    }
+    read_keyboard(&ev, &cp, &config);
 
     if(ev.type == ALLEGRO_EVENT_TIMER && al_is_event_queue_empty(event_queue)) {
+
+
+      if(config.machine == client)
+        send_server_keyboard(&config, &cp);
+
+      if(config.machine == server){
+        receive_keyboard(&config, &cp);
+        send_client_components(&config, &cp);
+      }
+
+      if(config.machine == client)
+        receive_components(&config, &cp);
+
+      if(config.machine ==server)
+        update(&cp);
+
       clean_display();
-      update(&cp);
       draw(&cp, font);
       al_flip_display();
-      printf("x: %f y: %f ang: %f\n", cp.ball.x, cp.ball.y, cp.ball.angle);
+      if(winner(&cp)){
+        break;
+      }
     }
-
+   }
+   clean_display();
+   if(winner(&cp) == p1){
+     if(config.machine == server)
+      al_draw_textf(font, COLOR_WHITE, DISPLAY_W/2 - 100, 10, 0, "Voce Venceu!");
+     else
+      al_draw_textf(font, COLOR_WHITE, DISPLAY_W/2 - 100, 10, 0, "Game Over");
+   }
+   else if(winner(&cp) == p2){
+     if(config.machine == client)
+      al_draw_textf(font, COLOR_WHITE, DISPLAY_W/2 - 100, 10, 0, "Voce Venceu!");
+     else
+      al_draw_textf(font, COLOR_WHITE, DISPLAY_W/2 - 100, 10, 0, "Game Over");
+   }
+   al_flip_display();
+   while(1){
+     if(ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+       break;
+     }
    }
 
    al_destroy_timer(timer);

@@ -14,7 +14,6 @@ int bounding_box_collision(int b1_x, int b1_y, int b1_w, int b1_h,
 }
 
 void add_angle(Object *obj, float angle){
-  //obj->angle += 2*(90.0 - obj->angle) + (-obj->angle + (2*angle_normalize));
   obj->angle = angle;
 }
 
@@ -29,8 +28,6 @@ void collide_ground(Components *cp){
   if(collision(cp->ball, cp->map.ground)){
     add_angle(&cp->ball, -cp->ball.angle);
     cp->ball.y = cp->map.ground.y - cp->ball.h;
-    printf("--x: %f y: %f ang: %f\n", cp->ball.x, cp->ball.y, cp->ball.angle);
-    //getchar();
   }
 }
 
@@ -43,50 +40,54 @@ void collide_roof(Components *cp){
 }
 
 void collide_pallets(Components *cp){
-  float ponto = cp->ball.y + cp->ball.h/2; /* middle point of the ball */
   float n = SEGMENTS;
   float i;
   int j;
   float angle;
-  float increment = cp->p2.h/8;
+  float increment = cp->p1.h/8;
   if(collision(cp->ball, cp->p1)){ /* if ball collide with first pallet */
-    float base = cp->ball.y - cp->p1.y;
-    for(i = 0.0, j = 0; i < cp->p2.h; i += increment, j++){
+    float base = cp->ball.y + (cp->ball.h/2) - cp->p1.y;
+    for(i = 0.0, j = 0; i < cp->p1.h; i += increment, j++){
       if(base < i){
         switch(j){
-          case 0: angle = -45; break;
-          case 1: angle = -30; break;
-          case 2: angle = -15; break;
+          case 0: angle = -15; break;
+          case 1: angle = -10; break;
+          case 2: angle = -5; break;
           case 3:
           case 4: angle = 0; break;
-          case 5: angle = 15; break;
-          case 6: angle = 30; break;
-          case 7: angle = 45; break;
+          case 5: angle = 5; break;
+          case 6: angle = 10; break;
+          case 7:
+          default: angle = 15; break;
         }
         break;
       }
     }
     add_angle(&cp->ball, angle);
+    cp->ball.velocity *= 1.2;
+    cp->ball.x = cp->p1.x + cp->p1.w;
   }
   else if(collision(cp->ball, cp->p2)){ /* if ball collide with second pallet */
-    float base = cp->ball.y - cp->p2.y;
+    float base = cp->ball.y + (cp->ball.h/2) - cp->p2.y;
     for(i = 0.0, j = 0; i < cp->p2.h; i += increment, j++){
       if(base < i){
         switch(j){
-          case 0: angle = 220; break;
-          case 1: angle = 205; break;
-          case 2: angle = 190; break;
+          case 0: angle = 195; break;
+          case 1: angle = 190; break;
+          case 2: angle = 185; break;
           case 3:
           case 4: angle = 180; break;
-          case 5: angle = 165; break;
-          case 6: angle = 150; break;
+          case 5: angle = 175; break;
+          case 6: angle = 170; break;
           case 7:
-          default:angle = 135; break;
+          default:angle = 165; break;
         }
         break;
       }
     }
     add_angle(&cp->ball, angle);
+    cp->ball.velocity *= 1.2;
+    cp->ball.x = cp->p2.x - cp->ball.w - 1;
   }
 }
 
@@ -106,10 +107,20 @@ Point collide_goal(Components *cp){
 void move_components(Components *cp){
   /* move the ball */
   move_object(&cp->ball);
-  if(cp->p1.angle != 0)
+  if(cp->p1.angle != 0 && cp->p1.y > 0 && cp->p1.y + cp->p1.h < DISPLAY_H)
     move_object(&cp->p1);
-  if(cp->p2.angle != 0)
+  if(cp->p2.angle != 0 && cp->p2.y > 0 && cp->p2.y + cp->p2.h < DISPLAY_H)
     move_object(&cp->p2);
+
+  if(cp->p2.y <= 0)
+    cp->p2.y = 1;
+  if(cp->p2.y + cp->p2.h >= DISPLAY_H)
+    cp->p2.y = DISPLAY_H - cp->p2.h - 1;
+
+  if(cp->p1.y <= 0)
+    cp->p1.y = 1;
+  if(cp->p1.y + cp->p1.h >= DISPLAY_H)
+    cp->p1.y = DISPLAY_H - cp->p1.h - 1;
 
 }
 

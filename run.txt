@@ -1,1 +1,1 @@
-gcc main.c `pkg-config --cflags --libs allegro_main-5 allegro_color-5 allegro_primitives-5 allegro_font-5 allegro_ttf-5` struct.h core.h core.c collision.h collision.c draw.h draw.c -lm
+gcc main.c `pkg-config --cflags --libs allegro_main-5 allegro_color-5 allegro_primitives-5 allegro_font-5 allegro_ttf-5` struct.h core.h core.c collision.h collision.c draw.h draw.c keyboard.h keyboard.c connection.h connection.c -lm

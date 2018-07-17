@@ -1,10 +1,10 @@
 #include "core.h"
-#include "collision.h"
+
 
 void create_pallets(Components *cp){
   /* first pallet */
   cp->p1.x = 100;
-  cp->p1.y = 100;
+  cp->p1.y = DISPLAY_H/2-(PALLET_SIZE_H/2);
   cp->p1.w = PALLET_SIZE_W;
   cp->p1.h = PALLET_SIZE_H;
   cp->p1.angle = 0;
@@ -12,8 +12,8 @@ void create_pallets(Components *cp){
   cp->point_p1 = 0;
 
   /* second pallet */
-  cp->p2.x = 500;
-  cp->p2.y = 100;
+  cp->p2.x = DISPLAY_W-100;
+  cp->p2.y = DISPLAY_H/2-(PALLET_SIZE_H/2);
   cp->p2.w = PALLET_SIZE_W;
   cp->p2.h = PALLET_SIZE_H;
   cp->point_p2 = 0;
@@ -24,8 +24,8 @@ void create_pallets(Components *cp){
 
 void create_ball(Components *cp, int direction){
   /* create the ball */
-  cp->ball.x = 250;
-  cp->ball.y = 100;
+  cp->ball.x = DISPLAY_W/2;
+  cp->ball.y = DISPLAY_H/2;
   cp->ball.w = BALL_SIZE;
   cp->ball.h = BALL_SIZE;
   cp->ball.angle = direction;
@@ -59,9 +59,37 @@ void create_map(Components *cp){
 }
 
 
-void start(Components *cp){
+void start(Components *cp, Config * config){
   /* define initial position of the ball */
   /* set the points */
+
+  printf("          ______      _____      ___    _     ______    \n");
+  printf("        /|  __  |   /|  _  |   /|   \\  | |   /|  ___|   \n");
+  printf("       | | |__| |  /|  | |  | | |    \\ | |  /|  |  __\n");
+  printf("       | |  ____| | |  | |  | | |  |\\ \\| | | |  | |  | \n");
+  printf("       | |  |__/  | |  |_|  | | |  | \\   | | |  |__| |  \n");
+  printf("       | |__|      |/|_____|  | |__|\\ \\__|  |/|_____|  \n");
+  printf("       |/__/        |/____/   |/__/  \\/__/   |/____/  \n\n\n");
+  printf("Servidor ou Cliente? (s/c) ");
+
+  switch(getchar()){
+    case 'c': config->machine = client; break;
+    case 's': config->machine = server; break;
+  }
+  fflush(stdin);
+  printf("Defina a porta: ");
+  scanf("%d", &config->port_server);
+  if(config->machine == client){
+    printf("Ip conexao: ");
+    scanf("%s", config->ip_server);
+  }
+
+  if(config->machine == server)
+    start_server_sock(config);
+  else if(config->machine == client)
+    start_client_sock(config);
+
+
   create_pallets(cp);
   create_ball(cp, DIRECTION_RIGHT);
   create_map(cp);
@@ -103,4 +131,12 @@ void update(Components *cp){
     add_point(cp, result);
     restart(cp, result);
   }
+}
+
+int winner(Components *cp){
+  if(cp->point_p1 == 10)
+    return p1;
+  else if(cp->point_p2 == 10)
+    return p2;
+  return 0;
 }
