@@ -1,4 +1,5 @@
 #include "collision.h"
+#include <stdlib.h>
 
 int bounding_box_collision(int b1_x, int b1_y, int b1_w, int b1_h,
    int b2_x, int b2_y, int b2_w, int b2_h)
@@ -44,36 +45,48 @@ void collide_roof(Components *cp){
 void collide_pallets(Components *cp){
   float ponto = cp->ball.y + cp->ball.h/2; /* middle point of the ball */
   float n = SEGMENTS;
-  float i = 0.0;
-  int j = 0;
-  float angle = 15;
+  float i;
+  int j;
+  float angle;
+  float increment = cp->p2.h/8;
   if(collision(cp->ball, cp->p1)){ /* if ball collide with first pallet */
-    for(i = 0.0, j = 0; i < cp->p1.y + cp->p1.h; i += (cp->p1.h)/n, j++){
-      switch(j){
-        case 0: case 7: angle = 15; break;
-        case 1: case 6: angle = 30; break;
-        case 2: case 5: angle = 45; break;
-        case 3: case 4: angle = 90; break;
-      }
-
-      if(cp->ball.y < cp->p1.y + i){
-        add_angle(&cp->ball, angle);
+    float base = cp->ball.y - cp->p1.y;
+    for(i = 0.0, j = 0; i < cp->p2.h; i += increment, j++){
+      if(base < i){
+        switch(j){
+          case 0: angle = -45; break;
+          case 1: angle = -30; break;
+          case 2: angle = -15; break;
+          case 3:
+          case 4: angle = 0; break;
+          case 5: angle = 15; break;
+          case 6: angle = 30; break;
+          case 7: angle = 45; break;
+        }
+        break;
       }
     }
+    add_angle(&cp->ball, angle);
   }
   else if(collision(cp->ball, cp->p2)){ /* if ball collide with second pallet */
-    for(i = 0.0, j = 0; i < cp->p1.y + cp->p1.h; i += (cp->p1.h)/n, j++){
-      switch(j){
-        case 0: case 7: angle = 15; break;
-        case 1: case 6: angle = 30; break;
-        case 2: case 5: angle = 45; break;
-        case 3: case 4: angle = 90; break;
-      }
-
-      if(cp->ball.y < cp->p1.y + i){
-        add_angle(&cp->ball, angle);
+    float base = cp->ball.y - cp->p2.y;
+    for(i = 0.0, j = 0; i < cp->p2.h; i += increment, j++){
+      if(base < i){
+        switch(j){
+          case 0: angle = 220; break;
+          case 1: angle = 205; break;
+          case 2: angle = 190; break;
+          case 3:
+          case 4: angle = 180; break;
+          case 5: angle = 165; break;
+          case 6: angle = 150; break;
+          case 7:
+          default:angle = 135; break;
+        }
+        break;
       }
     }
+    add_angle(&cp->ball, angle);
   }
 }
 

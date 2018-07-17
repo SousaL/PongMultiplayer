@@ -28,7 +28,7 @@ void create_ball(Components *cp, int direction){
   cp->ball.y = 100;
   cp->ball.w = BALL_SIZE;
   cp->ball.h = BALL_SIZE;
-  cp->ball.angle = INIT_ANGLE * direction;
+  cp->ball.angle = direction;
   cp->ball.velocity = INIT_VELOCITY;
 }
 
@@ -90,7 +90,6 @@ void restart(Components *cp, Point player_point){
 void update(Components *cp){
   Point result;
   /* check if the game over */
-
 
 
   collide_ground(cp);

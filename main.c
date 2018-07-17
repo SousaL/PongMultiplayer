@@ -53,6 +53,26 @@ int main(int argc, char **argv){
 
   Machine machine = server;
 
+  printf("*******************************************\n");
+  printf("******      ****    ***    **  ***    *****\n");
+  printf("******  **  ***  **  **  *  *  **  ********\n");
+  printf("******      ***  **  **  ** *  **  *   ****\n");
+  printf("******  *******  **  **  **    **  **  ****\n");
+  printf("******  ********    ***  ***   ***    *****\n");
+  printf("*******************************************\n\n\n");
+  printf("Servidor ou Cliente? (S/C) ");
+  getchar();
+  printf("Defina a porta: ");
+  getchar();
+  printf("Ip conexao: ");
+  getchar();
+  printf("Porta: ");
+  getchar();
+
+  return;
+
+
+
   while(1){
     ALLEGRO_EVENT ev;
     al_wait_for_event(event_queue, &ev);
